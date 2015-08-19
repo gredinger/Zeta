@@ -150,6 +150,12 @@ module Plugins
       m.reply s.tr('AEIOUaeiouyYWwXx', 'ÄËÏÖÜäëïöüÿŸẄẅẌẍ')
     end
 
+    match /\bfeature\b.+\brequest\b/i, method: :execute_userproblem, use_prefix: false
+
+    def execute_userproblem(m)
+      m.reply ["user error.", "working as intended", "Status: WONTFIX", "PEBKAC issue", "ID:10T Error"].sample
+    end
+
   end
 end
 
