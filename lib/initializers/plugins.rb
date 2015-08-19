@@ -1,3 +1,1 @@
-module Plugins
-
-end
+module Plugins; end

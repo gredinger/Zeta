@@ -1,3 +1,1 @@
-module Helper
-
-end
+module Helper; end

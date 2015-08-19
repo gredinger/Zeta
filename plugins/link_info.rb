@@ -48,6 +48,8 @@ module Plugins
     include Cinch::Plugin
     include Cinch::Helpers
 
+    enable_acl
+
     # Default list of URL regexps to ignore.
     DEFAULT_BLACKLIST = [/\.png$/i, /\.jpe?g$/i, /\.bmp$/i, /\.gif$/i, /\.pdf$/i].freeze
 
@@ -60,8 +62,6 @@ module Plugins
     match %r{(https?://.*?)(?:\s|$|,|\.\s|\.$)}, :use_prefix => false
 
     def execute(msg, url)
-      return unless check_user(msg)
-      return unless check_channel(msg)
       blacklist = DEFAULT_BLACKLIST.dup
       blacklist.concat(config[:blacklist]) if config[:blacklist]
 
@@ -70,7 +70,7 @@ module Plugins
       html = Nokogiri::HTML(open(url))
 
       if node = html.at_xpath("html/head/title")
-        msg.reply(node.text.gsub(/\r|\n|\n\r/, ' '))
+        msg.reply(node.text.lstrip.gsub(/\r|\n|\n\r/, ' '))
       end
 
       if node = html.at_xpath('html/head/meta[@name="description"]')
