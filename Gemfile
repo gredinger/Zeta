@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # Cinch
-gem 'cinch', '>=2.2.2'
+gem 'cinch'
 gem 'cinch-cooldown'
 gem 'cinch-toolbox'
 gem 'cinch-quotes'
@@ -15,11 +15,13 @@ gem 'pg'
 platform :ruby do
   gem 'libxml-ruby'
   gem 'mkfifo'
+  # gem 'ffi'
 end
 
 platform :rbx do
   gem 'rubysl'
   gem 'mkfifo'
+  # gem 'ffi'
 end
 
 platform :jruby do

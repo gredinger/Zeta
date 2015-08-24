@@ -13,7 +13,7 @@ module Plugins
     include Cinch::Plugin
     include Cinch::Helpers
 
-    enable_acl()
+    enable_acl(:nobody, false)
 
     listen_to :channel
     match /seen (.+)/

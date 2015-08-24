@@ -2,19 +2,21 @@ module Cinch
   module Plugin
 
     module ClassMethods
-      def enable_acl(lvl= :nobody)
-        hook(:pre, :for => [:match], :method => lambda { |m| check_acl(m,lvl) })
+      def enable_acl(lvl= :nobody, notify= true)
+        hook(:pre, :for => [:match], :method => lambda { |m| check_acl(m,lvl,notify) })
       end
     end
 
     LEVELS  = { banned: 0, nobody: 1, voice: 175, halfop: 191, operator: 207, admin: 223, owner: 239, founder: 255 }
     ILEVELS = LEVELS.invert
 
-    def check_acl(message, lvl)
+    def check_acl(message, lvl, notify)
       if Zconf.server.services.nickserv
         unless message.user.authname
-          message.user.send('You are not currently identified with services.', true)
-          message.user.send('If this is in error please use the ?whois command', true)
+          if notify
+            message.user.send('You are not currently identified with services.', true)
+            message.user.send('If this is in error please use the ?whois command', true)
+          end
           return false
         end
       end

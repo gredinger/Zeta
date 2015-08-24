@@ -10,7 +10,7 @@ module Plugins
     include Cinch::Helpers
     include ActionView::Helpers::DateHelper
 
-    enable_acl
+    enable_acl(:nobody, false)
 
     self.plugin_name = 'PDF Information'
     self.help = 'This plugin will check a url for a pdf link and fetch metadata from it'

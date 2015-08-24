@@ -48,7 +48,7 @@ module Plugins
     include Cinch::Plugin
     include Cinch::Helpers
 
-    enable_acl
+    enable_acl(:nobody, false)
 
     # Default list of URL regexps to ignore.
     DEFAULT_BLACKLIST = [/\.png$/i, /\.jpe?g$/i, /\.bmp$/i, /\.gif$/i, /\.pdf$/i].freeze

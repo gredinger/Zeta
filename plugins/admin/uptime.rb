@@ -1,7 +1,6 @@
 require 'sys/proctable'
 require 'action_view'
 
-
 module Admin
   class BotUptime
     include Cinch::Plugin
@@ -18,9 +17,17 @@ module Admin
 
     def get_uptime(m)
       p = ProcTable.ps($$)
-      start_time = Time.at(p.starttime)
-      diff = Time.now - start_time
-      m.reply("I have been up for #{time_ago_in_words(Time.now - diff)}.")
+      if p.starttime.class == Time
+        diff = Time.now - Time.at(p.starttime)
+        uptime = Time.now - diff
+      elsif p.starttime.class == Fixnum
+        diff = Time.now - Time.at(p.starttime / 100)
+        uptime = Time.now - diff
+      else
+        m.reply('Was i ever really started?')
+      end
+
+      m.reply("I have been up for #{time_ago_in_words(uptime)}.")
     end
 
     def get_sysuptime(m)
