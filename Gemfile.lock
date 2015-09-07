@@ -16,6 +16,8 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.3.8)
     afm (0.2.2)
+    ansi (1.5.0)
+    ast (2.1.0)
     builder (3.2.2)
     chronic (0.10.2)
     chronic_duration (0.10.6)
@@ -66,6 +68,7 @@ GEM
       tilt
     hashery (2.1.1)
     hashie (3.4.2)
+    htmlentities (4.3.4)
     http-cookie (1.0.2)
       domain_name (~> 0.5)
     httparty (0.13.5)
@@ -74,6 +77,7 @@ GEM
     humanize-bytes (2.1.0)
     i18n (0.7.0)
     ipaddress (0.8.0)
+    iso8601 (0.8.6)
     json (1.8.3)
     jwt (1.5.1)
     libxml-ruby (2.8.0)
@@ -96,6 +100,10 @@ GEM
       multi_json (~> 1.3)
       multi_xml (~> 0.5)
       rack (~> 1.2)
+    oga (1.3.0)
+      ast
+      ruby-ll (~> 2.1)
+    open_uri_redirections (0.2.1)
     pdf-reader (1.3.3)
       Ascii85 (~> 1.0.0)
       afm (~> 0.2.0)
@@ -119,6 +127,9 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
+    ruby-ll (2.1.2)
+      ansi
+      ast
     ruby-rc4 (0.1.5)
     rubysl (2.1.0)
       rubysl-abbrev (~> 2.0)
@@ -334,6 +345,13 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.1)
+    video_info (2.5.0)
+      addressable
+      htmlentities
+      iso8601
+      multi_json (~> 1.11)
+      oga
+      open_uri_redirections
     wolfram (0.2.1)
       nokogiri (>= 1.4.3)
     wolfram-alpha (0.3.1)
@@ -381,6 +399,7 @@ DEPENDENCIES
   sqlite3
   sys-proctable
   tag_formatter
+  video_info
   wolfram
   wolfram-alpha
 

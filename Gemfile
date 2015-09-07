@@ -57,6 +57,7 @@ gem 'github_api'
 gem 'evalso'
 gem 'gist'
 gem 'discourse_api'
+gem 'video_info'
 
 # DNSBL
 gem 'dronebl.rb'

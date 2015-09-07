@@ -25,6 +25,9 @@
 # == Author
 # Marvin Gülker (Quintus)
 #
+# == Modification author
+# Liothen
+#
 # == License
 # A named-pipe plugin for Cinch.
 # Copyright © 2012 Marvin Gülker
@@ -43,6 +46,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Plugin for inspecting links pasted into channels.
+require 'video_info'
+
 module Plugins
   class LinkInfo
     include Cinch::Plugin
@@ -59,16 +64,59 @@ module Plugins
     meta tags, and paste the result back into the channel.
     HELP
 
-    match %r{(https?://.*?)(?:\s|$|,|\.\s|\.$)}, :use_prefix => false
+    match %r{\b((https?:\/\/)?(([0-9a-zA-Z_!~*'().&=+$%-]+:)?[0-9a-zA-Z_!~*'().&=+$%-]+\@)?(([0-9]{1,3}\.){3}[0-9]{1,3}|([0-9a-zA-Z_!~*'()-]+\.)*([0-9a-zA-Z][0-9a-zA-Z-]{0,61})?[0-9a-zA-Z]\.[a-zA-Z]{2,6})(:[0-9]{1,4})?((\/[0-9a-zA-Z_!~*'().;?:\@&=+$,%#-]+)*\/?))}i, use_prefix: false
 
     def execute(msg, url)
+      url = "http://#{url}" unless url=~/^https?:\/\//
+
+      # Ignore items on blacklist
       blacklist = DEFAULT_BLACKLIST.dup
       blacklist.concat(config[:blacklist]) if config[:blacklist]
-
       return if blacklist.any?{|entry| url =~ entry}
-      debug "URL matched: #{url}"
-      html = Nokogiri::HTML(open(url))
 
+      # Log
+      debug "URL matched: #{url}"
+
+      # Parse URI
+      p = URI(url)
+
+      # API key lookup
+      VideoInfo.provider_api_keys = { youtube: Zsec.google }
+
+      # Parse out specific websites
+      if p.host == 'youtube.com' || p.host == 'www.youtube.com' || p.host == 'youtu.be'
+        match_youtube(msg, url)
+      else
+        match_other(msg,url)
+      end
+
+    rescue => e
+      error "#{e.class.name}: #{e.message}"
+    end
+
+    private
+    def match_youtube(msg, url)
+      if Zsec.google
+        video = VideoInfo.new(url)
+        msg.reply "#{Format(:red, 'YouTube ')}∴ #{video.title} ( #{Format(:green, Time.at(video.duration).strftime("%H:%M:%S"))} )"
+      else
+        match_other(msg, url)
+      end
+
+    end
+
+    def match_github(msg, url)
+      # TODO parse github url
+    end
+
+    def match_imgur(msg, url)
+      # TODO parse imgur url
+
+    end
+
+    def match_other(msg,url)
+      # Open URL
+      html = Nokogiri::HTML(open(url))
       if node = html.at_xpath("html/head/title")
         msg.reply(node.text.lstrip.gsub(/\r|\n|\n\r/, ' '))
       end
@@ -76,8 +124,6 @@ module Plugins
       if node = html.at_xpath('html/head/meta[@name="description"]')
         msg.reply(node[:content].lines.first(3).join.gsub(/\r|\n|\n\r/, ' '))
       end
-    rescue => e
-      error "#{e.class.name}: #{e.message}"
     end
 
   end
