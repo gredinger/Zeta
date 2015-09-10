@@ -52,11 +52,12 @@ module Plugins
   class LinkInfo
     include Cinch::Plugin
     include Cinch::Helpers
+    include ActionView::Helpers::DateHelper
 
     enable_acl(:nobody, false)
 
     # Default list of URL regexps to ignore.
-    DEFAULT_BLACKLIST = [/\.png$/i, /\.jpe?g$/i, /\.bmp$/i, /\.gif$/i, /\.pdf$/i].freeze
+    # DEFAULT_BLACKLIST = [/\.png$/i, /\.jpe?g$/i, /\.bmp$/i, /\.gif$/i, /\.pdf$/i].freeze
 
     set :help, <<-HELP
   http[s]://...
@@ -70,9 +71,9 @@ module Plugins
       url = "http://#{url}" unless url=~/^https?:\/\//
 
       # Ignore items on blacklist
-      blacklist = DEFAULT_BLACKLIST.dup
-      blacklist.concat(config[:blacklist]) if config[:blacklist]
-      return if blacklist.any?{|entry| url =~ entry}
+      # blacklist = DEFAULT_BLACKLIST.dup
+      # blacklist.concat(config[:blacklist]) if config[:blacklist]
+      # return if blacklist.any?{|entry| url =~ entry}
 
       # Log
       debug "URL matched: #{url}"
@@ -86,6 +87,8 @@ module Plugins
       # Parse out specific websites
       if p.host == 'youtube.com' || p.host == 'www.youtube.com' || p.host == 'youtu.be'
         match_youtube(msg, url)
+      elsif p.host == 'i.imgur.com' || p.host == 'imgur.com'
+        match_imgur(msg, url)
       else
         match_other(msg,url)
       end
@@ -110,8 +113,28 @@ module Plugins
     end
 
     def match_imgur(msg, url)
-      # TODO parse imgur url
+      id = url.to_s.match(%r{(?:https?://i?\.?imgur.com/)(?:.*\/)?([A-Za-z0-9]+)(?:\.jpg|png|gif|gifv)?}i)
+      return match_other(msg, url) unless id
 
+      # Query Data
+      data = JSON.parse(
+          RestClient.get("https://api.imgur.com/3/image/#{id[1]}", { Authorization: "Client-ID #{Zsec.imgur.id}" })
+      )
+      return 'Unable to query imgur' unless defined?(data)
+      i = Hashie::Mash.new(data)
+
+      # SET Not Safe For Work
+      if i.data.nsfw
+        nsf = "[#{Format(:red, 'NSFW')}]"
+      else
+        nsf = "[#{Format(:green, 'SAFE')}]"
+      end
+
+      # Trigger reply message
+      msg.reply("#{Format(:purple, 'IMGUR')} #{nsf} ∴ [#{Format(:yellow, i.data.type)}] "\
+              "#{Format(:yellow, "#{i.data.width}x#{i.data.height}")} "\
+              "∴ Views: #{Format(:blue, i.data.views.to_s)} ∴ #{i.data.title ? i.data.title[0..100] : 'No Title'} "\
+              "∴ Posted #{Format(:green, time_ago_in_words(Time.at(i.data.datetime)))} ago")
     end
 
     def match_other(msg,url)
