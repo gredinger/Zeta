@@ -131,10 +131,9 @@ module Plugins
       end
 
       # Trigger reply message
-      msg.reply("#{Format(:purple, 'IMGUR')} #{nsf} ∴ [#{Format(:yellow, i.data.type)}] "\
-              "#{Format(:yellow, "#{i.data.width}x#{i.data.height}")} "\
-              "∴ Views: #{Format(:blue, i.data.views.to_s)} ∴ #{i.data.title ? i.data.title[0..100] : 'No Title'} "\
-              "∴ Posted #{Format(:green, time_ago_in_words(Time.at(i.data.datetime)))} ago")
+      msg.reply("#{Format(:purple, 'IMGUR')} #{nsf} ∴ [#{Format(:yellow, i.data.type)}] #{i.data.width}x#{i.data.height} "\
+              "∴ Views: #{ i.data.views.to_s} ∴ #{i.data.title ? i.data.title[0..100] : 'No Title'} "\
+              "∴ Posted #{time_ago_in_words(Time.at(i.data.datetime))} ago")
     end
 
     def match_other(msg,url)
