@@ -24,7 +24,10 @@ module Admin
         unless m.user.nick == bot.nick
           # m.channel.voice(m.user) if m.channel.opped? bot.nick
           if defined? m.user.authname && m.user.nick != bot.nick
-            @users[m.user.authname] = Time.now
+
+            @users[m.channel] = Hash.new unless @users.has_key?(m.channel)
+            @users[m.channel][m.user.authname] = Time.now
+
             if m.channel.opped? bot.nick
               unless m.channel.opped?(m.user) || m.channel.voiced?(m.user) || m.channel.half_opped?(m.user)
                 m.channel.voice(m.user)
@@ -52,14 +55,13 @@ module Admin
 
 
     def timer(m)
-      @users.delete_if do |k,v|
+      return unless @users.has_key?(m.channel)
+      @users[m.channel].delete_if do |k,v|
         v <= Time.now - 3600
       end
-      puts @users
-      puts m.channel.voiced
       m.channel.voiced.each do |v|
         debug 'Check users'
-        m.channel.devoice(v) unless @users.has_key?(v.authname)
+        m.channel.devoice(v) unless @users[m.channel.name].has_key?(v.authname)
       end
     end
   end
