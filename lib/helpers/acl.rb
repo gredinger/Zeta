@@ -27,7 +27,8 @@ module Cinch
         allow_channel = true
       end
       allow_user = check_user(message, lvl)
-      return false unless allow_user && allow_channel
+      return true if allow_user && allow_channel
+      false
     end
 
 
@@ -38,7 +39,7 @@ module Cinch
       Zuser.where(id: u.id).update(plugin_usage: c)
       return false if u.ignore
       return true if u.access.to_i >= LEVELS[role]
-      u
+      false
     end
 
     def find_user(m)
