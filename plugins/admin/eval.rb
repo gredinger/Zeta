@@ -6,7 +6,7 @@ module Admin
     enable_acl(:owner)
 
     set(
-        plugin_name: "BotEval",
+        plugin_name: "Bot_Eval",
         help:        "Bot administrator-only private commands.\nUsage: `?er <code>`;",
     )
 
