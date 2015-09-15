@@ -13,7 +13,7 @@ module Plugins
     def oper_up(m)
       return unless m.user.oper
       if Zconf.oper.username && Zconf.oper.password
-        @bot.oper(Zconf.oper.password, Zconf.oper.username)
+        @bot.oper(Zconf.server.oper.password, Zconf.server.oper.username)
       end
     end
 
