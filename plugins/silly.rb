@@ -69,6 +69,29 @@ module Plugins
       end
     end
 
+    match "halloween", method: :halloween
+    match "halloweve", method: :halloween
+    match /halloween (\S+)/, method: :halloween
+
+    def halloween(m, tz = nil)
+      tz ||= "-00:00"
+      tz = tzparser(tz)
+      begin
+        today = Time.now.localtime(tz)
+        hw = Time.new(today.year, 10, 31, 0, 0, 0, tz)
+        hw = hw.next_year if hw.to_date.past?
+        message = if hw.to_date == today.to_date
+                    "THIS IS HALLOWEEN!"
+                  else
+                    "There's #{ChronicDuration.output(hw.to_i - today.to_i, format: :long)} until Hallow's Eve!"
+                  end
+      rescue ArgumentError => ae
+        message = ae.message
+      ensure
+        m.reply message, true
+      end
+    end
+
     match "xmas", method: :xmas
     match /xmas (\S+)/, method: :xmas
 
@@ -76,9 +99,9 @@ module Plugins
       tz ||= "-00:00"
       tz = tzparser(tz)
       begin
-        today = Time.now.localtime(tz)
-        xmas = Time.new(today.year, 12, 25, 0, 0, 0, tz)
-        xmas = xmas.next_year if xmas.to_date.past?
+        today   = Time.now.localtime(tz)
+        xmas    = Time.new(today.year, 12, 25, 0, 0, 0, tz)
+        xmas    = xmas.next_year if xmas.to_date.past?
         message = if xmas.to_date == today.to_date
                     "Merry Christmas!"
                   else
