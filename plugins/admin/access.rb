@@ -8,6 +8,7 @@ module Admin
     # Regex
     match /setaccess (.+) (nobody|voice|halfop|operator|admin|owner)/, method: :set_access
     match /access (.+)/, method: :show_access
+    match /listaccess (.+)/, method: :list_access
     match "access", method: :show_access
 
 
@@ -33,6 +34,14 @@ module Admin
       u = Zuser.find(nickname: user) || find_user(m)
       access = u.access || 1
       m.reply "#{u.nick} is a #{ILEVELS[access.to_i].to_s}"
+    end
+
+    def list_access(m, level = :operator)
+      access = level.to_sym
+      return m.reply('Not a known access level') unless LEVELS[access]
+      users = Zuser.select(:nickname, :authname, :access).where(access: LEVELS[access]).map { |u| u.nickname }.join(', ')
+      return m.reply('No users found in that access level') unless users
+      m.reply "#{level} - #{users}"
     end
 
   end
