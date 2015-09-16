@@ -19,6 +19,7 @@ module Admin
     match 'disable', method: :disable_channel
     match 'enable', method: :enable_channel
 
+    match 'ignorelist', method: :ignore_list
 
     # Methods
     def ignore_user(m, nickname)
@@ -114,6 +115,12 @@ module Admin
         end
       end
 
+    end
+
+    def ignore_list(m)
+      list = Zuser.where(ignore: true).map(:authname).join(', ')
+      return m.reply('Unable to get list of ignored users') unless list
+      m.reply "Currently ignored users are: #{list}"
     end
 
   end
