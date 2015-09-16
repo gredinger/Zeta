@@ -1,3 +1,4 @@
+#!/bin/env ruby
 $:.unshift(File.expand_path('lib', __FILE__))
 $root_path = File.dirname(File.absolute_path(__FILE__))
 
