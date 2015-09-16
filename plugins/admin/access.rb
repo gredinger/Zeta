@@ -12,6 +12,7 @@ module Admin
 
 
     def set_access(m, user, lvl)
+      user.rstrip! if defined?(user)
       return m.reply("Cannot set own access!") if m.user.nick == user
       o = find_user(m)
       u = find_user(User(user))
