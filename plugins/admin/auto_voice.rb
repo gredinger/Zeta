@@ -21,14 +21,23 @@ module Admin
     end
 
     def listen(m)
+      # Autovoice Enabled?
       if @channels.member? m.channel
+        # Respect the ignore list
         return if defined?(m.user.authname) && @ignore.member?(m.user.authname)
-        puts @ignore
+
+        # Ignore bot
         unless m.user.nick == bot.nick
+
+          # Ignore users that are not identified
           if defined? m.user.authname && m.user.nick != bot.nick
             @users[m.channel] = Hash.new unless @users.has_key?(m.channel)
             @users[m.channel][m.user.authname] = Time.now
+
+            # Make sure Bot is either Opped or Half Opped
             if m.channel.opped?(bot.nick) || m.channel.half_opped?(bot.nick)
+
+              # Don't try to voice users that are opped half_opped or voiced already...
               unless m.channel.opped?(m.user) || m.channel.voiced?(m.user) || m.channel.half_opped?(m.user)
                 m.channel.voice(m.user)
               end
@@ -61,17 +70,32 @@ module Admin
 
 
     def timer(m)
+      # Do not run if there is no users in the recent list
       return unless @users.key?(m.channel)
-      chan = @users[m.channel]
-      @users[m.channel].delete_if do |k,v|
-        v <= Time.now - 3600
-      end
-      m.channel.voiced.each do |v|
-        m.channel.devoice(v) unless chan.key?(v.authname)
-      end
-    end
-  end
 
+      # Remove users from @users if their time has expired
+      @users[m.channel].delete_if do |k,v|
+        v <= Time.now - 10
+        end
+
+      # Return a difference from the total voiced users and the ones that we want to remove
+      chan = @users[m.channel]
+      userlist = m.channel.voiced.delete_if{|u| chan.key?(u.authname)}
+
+      # No changes to voiced users - finish
+      return if userlist.count == 0
+
+      # Count the number of users to be changed
+      modes = 'v' * userlist.count
+
+      # Mass mode change
+      # TODO Limit how many users can be mass mode. irc limitation
+      @bot.irc.send "MODE #{m.channel} -#{modes} #{userlist.flatten.join(' ')}"
+    end
+
+  ##
+  end
+##
 end
 
 
