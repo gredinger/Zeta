@@ -41,12 +41,13 @@ module Admin
               unless m.channel.opped?(m.user) || m.channel.voiced?(m.user) || m.channel.half_opped?(m.user)
                 m.channel.voice(m.user)
               end
+
+              # Check for timed out, thus devoice user
+              timer(m)
             end
           end
         end
 
-        # Check for timed out, thus devoice user
-        timer(m)
       end
     end
 
