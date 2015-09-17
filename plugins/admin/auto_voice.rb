@@ -76,7 +76,7 @@ module Admin
 
       # Remove users from @users if their time has expired
       @users[m.channel].delete_if do |k,v|
-        v <= Time.now - 10
+        v <= Time.now - 3600
         end
 
       # Return a difference from the total voiced users and the ones that we want to remove
