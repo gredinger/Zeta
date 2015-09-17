@@ -16,6 +16,7 @@ module Plugins
     match /calc (.+)/, method: :calculate
 
     def calculate(m, query)
+      debug 'Query: ' + query
       url = URI.encode "http://api.wolframalpha.com/v2/query?input=#{query}&appid=#{Zsec.wolfram}&primary=true&format=plaintext"
       request = open(url).read
       data = Crack::XML.parse(request)
