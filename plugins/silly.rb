@@ -41,11 +41,7 @@ module Plugins
             m.reply "I said, do NOT poke the bot!"
           when 5
             msg = ["WHAT ARE YOU, AN IDIOT? I SAID DO NOT POKE ME!!", "THIS! IS! SPARTA!!"].sample
-            if m.channel[@bot].any? { |e| (@bot.irc.isupport['PREFIX'] - 'v').include(e) }
-              m.channel.kick m.user, ["WHAT ARE YOU, AN IDIOT? I SAID DO NOT POKE ME!!", "THIS! IS! SPARTA!!"].sample
-            else
-              m.reply msg
-            end
+            m.channel.kick m.user, ["WHAT ARE YOU, AN IDIOT? I SAID DO NOT POKE ME!!", "THIS! IS! SPARTA!!"].sample
             @pokers.delete(m.user)
         end
       end
