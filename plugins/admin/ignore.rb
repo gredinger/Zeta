@@ -118,7 +118,7 @@ module Admin
     end
 
     def ignore_list(m)
-      list = Zuser.where(ignore: true).map(:authname).join(', ')
+      list = Zuser.where(ignore: true).map(:nickname).join(', ')
       return m.reply('Unable to get list of ignored users') unless list
       m.reply "Currently ignored users are: #{list}"
     end
