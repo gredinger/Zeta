@@ -74,6 +74,9 @@ module Admin
       # Do not run if there is no users in the recent list
       return unless @users.key?(m.channel)
 
+      # Check for ignored people
+      return if defined?(m.user.authname) && @ignore.member?(m.user.authname)
+
       # Remove users from @users if their time has expired
       @users[m.channel].delete_if do |k,v|
         v <= Time.now - 3600
