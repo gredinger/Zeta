@@ -15,14 +15,17 @@ module Plugins
     match /wolframalpha (.+)/, method: :calculate
     match /calc (.+)/, method: :calculate
 
-    def calculate(msg, query)
+    def calculate(m, query)
       url = URI.encode "http://api.wolframalpha.com/v2/query?input=#{query}&appid=#{Zsec.wolfram}&primary=true&format=plaintext"
-      # request = RestClient.get(url)
       request = open(url).read
       data = Crack::XML.parse(request)
-      answer = data['queryresult']['pod'][1]['subpod']['plaintext']
-      msg.user.send "# Wolfram Results #\n #{answer}", true
-
+      pod0 = data['queryresult']['pod'][0]['subpod']['plaintext'].strip
+      pod1 = data['queryresult']['pod'][1]['subpod']['plaintext'].strip
+      if pod1.lines.count > 2
+        m.user.send "# Wolfram Results #\n #{pod0}\n #{pod1}", true
+      else
+        m.reply "#{pod0} #{pod1}"
+      end
     end
 
   end
