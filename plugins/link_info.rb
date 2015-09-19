@@ -69,6 +69,7 @@ module Plugins
 
     def execute(msg, url)
       url = "http://#{url}" unless url=~/^https?:\/\//
+      url = URI.encode(url)
 
       # Ignore items on blacklist
       # blacklist = DEFAULT_BLACKLIST.dup
@@ -138,13 +139,14 @@ module Plugins
 
     def match_other(msg,url)
       # Open URL
-      html = Nokogiri::HTML(open(url))
+      html = Nokogiri::HTML(open(url, {read_timeout: 5}))
+      html.encoding = 'utf-8'
       if node = html.at_xpath("html/head/title")
-        msg.reply(node.text.lstrip.gsub(/\r|\n|\n\r/, ' '))
+        msg.reply(node.text.lstrip.gsub(/\r|\n|\n\r/, ' ')[0..300])
       end
 
       if node = html.at_xpath('html/head/meta[@name="description"]')
-        msg.reply(node[:content].lines.first(3).join.gsub(/\r|\n|\n\r/, ' '))
+        msg.reply(node[:content].lines.first(3).join.gsub(/\r|\n|\n\r/, ' ')[0..300])
       end
     end
 
