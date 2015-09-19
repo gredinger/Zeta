@@ -104,4 +104,4 @@ end
 
 
 # AutoLoad
-Zeta.config.plugins.plugins.push Admin::BotAutoVoice
+# Zeta.config.plugins.plugins.push Admin::BotAutoVoice
