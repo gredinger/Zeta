@@ -142,7 +142,7 @@ module Plugins
     def match_other(msg,url)
       # Open URL
       begin
-        html = Nokogiri::HTML(open(url, {read_timeout: 5}))
+        html = Nokogiri::HTML(open(url, {read_timeout: 2}))
         html.encoding = 'utf-8'
         if node = html.at_xpath("html/head/title")
           msg.reply(node.text.lstrip.gsub(/\r|\n|\n\r/, ' ')[0..300])
