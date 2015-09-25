@@ -139,14 +139,19 @@ module Plugins
 
     def match_other(msg,url)
       # Open URL
-      html = Nokogiri::HTML(open(url, {read_timeout: 5}))
-      html.encoding = 'utf-8'
-      if node = html.at_xpath("html/head/title")
-        msg.reply(node.text.lstrip.gsub(/\r|\n|\n\r/, ' ')[0..300])
-      end
+      begin
+        html = Nokogiri::HTML(open(url, {read_timeout: 5, redirect: false}))
+        html.encoding = 'utf-8'
+        if node = html.at_xpath("html/head/title")
+          msg.reply(node.text.lstrip.gsub(/\r|\n|\n\r/, ' ')[0..300])
+        end
 
-      if node = html.at_xpath('html/head/meta[@name="description"]')
-        msg.reply(node[:content].lines.first(3).join.gsub(/\r|\n|\n\r/, ' ')[0..300])
+        if node = html.at_xpath('html/head/meta[@name="description"]')
+          msg.reply(node[:content].lines.first(3).join.gsub(/\r|\n|\n\r/, ' ')[0..300])
+        end
+      rescue OpenURI::HTTPError => e
+        e.io.close!
+        error "[404] #{msg.user.authname} - #{url}"
       end
     end
 
