@@ -65,7 +65,9 @@ module Plugins
     meta tags, and paste the result back into the channel.
     HELP
 
-    match %r{\b((https?:\/\/)?(([0-9a-zA-Z_!~*'().&=+$%-]+:)?[0-9a-zA-Z_!~*'().&=+$%-]+\@)?(([0-9]{1,3}\.){3}[0-9]{1,3}|([0-9a-zA-Z_!~*'()-]+\.)*([0-9a-zA-Z][0-9a-zA-Z-]{0,61})?[0-9a-zA-Z]\.[a-zA-Z]{2,6})(:[0-9]{1,4})?((\/[0-9a-zA-Z_!~*'().;?:\@&=+$,%#-]+)*\/?))}i, use_prefix: false
+    match %r{\b((https?:\/\/)?(([0-9a-zA-Z_!~*'().&=+$%-]+:)?[0-9a-zA-Z_!~*'().&=+$%-]+\@)?(([0-9]{1,3}\.){3}[0-9]{1,3}|([0-9a-zA-Z_!~*'()-]+\.)*([0-9a-zA-Z][0-9a-zA-Z-]{0,61})?[0-9a-zA-Z]\.[a-zA-Z]{2,6})(:[0-9]{1,4})?((\/[0-9a-zA-Z_!~*'().;?:\@&=+$,%#-]+)*\/?))}i,
+          use_prefix: false,
+          react_on: :channel
 
     def execute(msg, url)
       url = "http://#{url}" unless url=~/^https?:\/\//
@@ -140,7 +142,7 @@ module Plugins
     def match_other(msg,url)
       # Open URL
       begin
-        html = Nokogiri::HTML(open(url, {read_timeout: 5, redirect: false}))
+        html = Nokogiri::HTML(open(url, {read_timeout: 5}))
         html.encoding = 'utf-8'
         if node = html.at_xpath("html/head/title")
           msg.reply(node.text.lstrip.gsub(/\r|\n|\n\r/, ' ')[0..300])
@@ -150,7 +152,8 @@ module Plugins
           msg.reply(node[:content].lines.first(3).join.gsub(/\r|\n|\n\r/, ' ')[0..300])
         end
       rescue OpenURI::HTTPError => e
-        e.io.close!
+        puts e
+        e.io.close
         error "[404] #{msg.user.authname} - #{url}"
       end
     end
