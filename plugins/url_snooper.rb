@@ -47,9 +47,10 @@
 
 # Plugin for inspecting links pasted into channels.
 require 'video_info'
+require 'mechanize'
 
 module Plugins
-  class LinkInfo
+  class URLSnooper
     include Cinch::Plugin
     include Cinch::Helpers
     include ActionView::Helpers::DateHelper
@@ -140,10 +141,8 @@ module Plugins
     end
 
     def match_other(msg,url)
-      # Open URL
       begin
-        html = Nokogiri::HTML(open(url, {read_timeout: 2}))
-        html.encoding = 'utf-8'
+        html = Mechanize.start { |m| Nokogiri::HTML(m.get(url).content, nil, 'utf-8') }
         if node = html.at_xpath("html/head/title")
           msg.reply(node.text.lstrip.gsub(/\r|\n|\n\r/, ' ')[0..300])
         end
@@ -151,9 +150,7 @@ module Plugins
         if node = html.at_xpath('html/head/meta[@name="description"]')
           msg.reply(node[:content].lines.first(3).join.gsub(/\r|\n|\n\r/, ' ')[0..300])
         end
-      rescue OpenURI::HTTPError => e
-        puts e
-        e.io.close
+      rescue
         error "[404] #{msg.user.authname} - #{url}"
       end
     end
@@ -163,5 +160,5 @@ end
 
 
 # AutoLoad
-Zeta.config.plugins.plugins.push Plugins::LinkInfo
+Zeta.config.plugins.plugins.push Plugins::URLSnooper
 

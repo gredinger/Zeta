@@ -40,6 +40,7 @@ gem 'haml'
 gem 'nokogiri'
 gem 'actionview'
 gem 'persist'
+gem 'mechanize'
 
 gem 'recursive-open-struct'
 gem 'require_all'
