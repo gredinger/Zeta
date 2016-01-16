@@ -7,7 +7,7 @@ module Plugins
     include Cinch::Plugin
     include Cinch::Helpers
 
-    enable_acl
+    enable_acl(:nobody, false)
 
     attr_reader :macros
 
