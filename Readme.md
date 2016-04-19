@@ -42,6 +42,12 @@ _Plugins_
 * ?plugin reload (plugin)
 * ?plugin set    (plugin)
 
+Plugin names are derifed from the plugin class definition.
+```
+eg.
+?plugin unload Plugins::Fml
+```
+
 _Developer_
 ** Role Required: owner **
 * ?die (msg) // Kills the bot
